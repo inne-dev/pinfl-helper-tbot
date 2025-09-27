@@ -12,6 +12,7 @@ TRANSLATIONS = {
             "Salom! PINFL tahlil qilish uchun menga yuboring va men uning to'g'ri yoki noto'g'ri ekanligini aytaman.\n"
             "Mavjud buyruqlar:\n"
             "/start - Bot bilan ishlashni boshlash\n"
+            "/help - Bot haqida ma'lumot\n"
             "/generate - Tasodifiy PINFL yaratish\n"
             "/language - Tilni tanlash\n"
             "/stats - Oylik statistika (shaffoflik uchun)\n"
@@ -22,6 +23,7 @@ TRANSLATIONS = {
             "Привет! Отправь мне PINFL для анализа и я скажу валидный он или нет.\n"
             "Доступные команды:\n"
             "/start - Начать работу с ботом\n"
+            "/help - Информация о боте\n"
             "/generate - Сгенерировать случайный PINFL\n"
             "/language - Выбрать язык\n"
             "/stats - Месячная статистика (для прозрачности)\n"
@@ -32,6 +34,7 @@ TRANSLATIONS = {
             "Hello! Send me a PINFL for analysis and I'll tell you if it's valid or not.\n"
             "Available commands:\n"
             "/start - Start working with the bot\n"
+            "/help - Information about the bot\n"
             "/generate - Generate random PINFL\n"
             "/language - Choose language\n"
             "/stats - Monthly statistics (for transparency)\n"
@@ -143,6 +146,181 @@ TRANSLATIONS = {
         "uz": "📈 Jami foydalanuvchilar: {count}",
         "ru": "📈 Всего пользователей: {count}",
         "en": "📈 Total users: {count}",
+    },
+    "disclaimer": {
+        "uz": (
+            "⚠️ <b>Ogohlantirish:</b> Bu bot norasmiy bo'lib, davlat xizmatlariga "
+            "murojaat qilmasdan tahlil qiladi. Shuning uchun u haqiqiy hududlarni "
+            "yoki PINFL mavjudligini tekshira olmaydi, faqat matematik hisob-kitoblar "
+            "asosida to'g'rilik tekshiruvini amalga oshiradi.\n"
+        ),
+        "ru": (
+            "⚠️ <b>Предупреждение:</b> Этот бот неофициальный и проводит анализ "
+            "не обращаясь к государственным сервисам. Поэтому он не может проверить "
+            "реальные регионы или существование PINFL, а проводит только проверку "
+            "корректности на основе математических вычислений.\n"
+        ),
+        "en": (
+            "⚠️ <b>Warning:</b> This bot is unofficial and performs analysis "
+            "without accessing government services. Therefore, it cannot verify "
+            "real regions or PINFL existence, only performs correctness checks "
+            "based on mathematical calculations.\n"
+        ),
+    },
+    "pinfl_structure_header": {
+        "uz": "📋 <b>PINFL tuzilishi:</b>",
+        "ru": "📋 <b>Структура PINFL:</b>",
+        "en": "📋 <b>PINFL structure:</b>",
+    },
+    "pinfl_part_century_gender": {
+        "uz": "🔢 Asr/Jins: <code>{value}</code> ({gender}, {century} asr)",
+        "ru": "🔢 Век/Пол: <code>{value}</code> ({gender}, {century} век)",
+        "en": "🔢 Century/Gender: <code>{value}</code> ({gender}, {century} century)",
+    },
+    "pinfl_part_day": {
+        "uz": "📅 Kun: <code>{value}</code>",
+        "ru": "📅 День: <code>{value}</code>",
+        "en": "📅 Day: <code>{value}</code>",
+    },
+    "pinfl_part_month": {
+        "uz": "📅 Oy: <code>{value}</code>",
+        "ru": "📅 Месяц: <code>{value}</code>",
+        "en": "📅 Month: <code>{value}</code>",
+    },
+    "pinfl_part_year": {
+        "uz": "📅 Yil: <code>{value}</code> ({full_year} yil)",
+        "ru": "📅 Год: <code>{value}</code> ({full_year} год)",
+        "en": "📅 Year: <code>{value}</code> ({full_year} year)",
+    },
+    "pinfl_part_area_code": {
+        "uz": "🗺️ Hudud kodi: <code>{value}</code>",
+        "ru": "🗺️ Код региона: <code>{value}</code>",
+        "en": "🗺️ Area code: <code>{value}</code>",
+    },
+    "pinfl_part_serial": {
+        "uz": "🔢 Seriya raqami: <code>{value}</code>",
+        "ru": "🔢 Серийный номер: <code>{value}</code>",
+        "en": "🔢 Serial number: <code>{value}</code>",
+    },
+    "pinfl_part_check_digit": {
+        "uz": "✅ Nazorat raqami: <code>{value}</code>",
+        "ru": "✅ Контрольная цифра: <code>{value}</code>",
+        "en": "✅ Check digit: <code>{value}</code>",
+    },
+    "validation_result_valid": {
+        "uz": "✅ <b>PINFL to'g'ri</b>",
+        "ru": "✅ <b>PINFL действителен</b>",
+        "en": "✅ <b>PINFL is valid</b>",
+    },
+    "validation_result_invalid": {
+        "uz": "❌ <b>PINFL noto'g'ri</b>",
+        "ru": "❌ <b>PINFL недействителен</b>",
+        "en": "❌ <b>PINFL is invalid</b>",
+    },
+    "error_details_header": {
+        "uz": "🔍 <b>Topilgan xatolar:</b>",
+        "ru": "🔍 <b>Найденные ошибки:</b>",
+        "en": "🔍 <b>Found errors:</b>",
+    },
+    "error_date_invalid": {
+        "uz": "❌ Noto'g'ri sana: {day}.{month:02d}.{year} - bunday sana mavjud emas",
+        "ru": "❌ Неверная дата: {day}.{month:02d}.{year} - такой даты не существует",
+        "en": "❌ Invalid date: {day}.{month:02d}.{year} - such date does not exist",
+    },
+    "error_check_digit": {
+        "uz": "❌ Nazorat raqami xato: {given} (kutilgan: {expected})",
+        "ru": "❌ Ошибка контрольной цифры: {given} (ожидаемая: {expected})",
+        "en": "❌ Check digit error: {given} (expected: {expected})",
+    },
+    "error_area_code_zero": {
+        "uz": "❌ Hudud kodi 000 bo'lishi mumkin emas",
+        "ru": "❌ Код региона не может быть 000",
+        "en": "❌ Area code cannot be 000",
+    },
+    "error_serial_zero": {
+        "uz": "❌ Seriya raqami 000 bo'lishi mumkin emas",
+        "ru": "❌ Серийный номер не может быть 000",
+        "en": "❌ Serial number cannot be 000",
+    },
+    "help_command_title": {
+        "uz": "ℹ️ <b>PINFL Helper Bot haqida</b>",
+        "ru": "ℹ️ <b>О боте PINFL Helper</b>",
+        "en": "ℹ️ <b>About PINFL Helper Bot</b>",
+    },
+    "help_what_is_pinfl": {
+        "uz": (
+            "📖 <b>PINFL nima?</b>\n"
+            "PINFL (Jismoniy shaxsning soliq to'lovchi identifikatsiya raqami) - "
+            "O'zbekistonda fuqarolarni identifikatsiya qilish uchun ishlatiladigan 14 xonali raqam.\n\n"
+        ),
+        "ru": (
+            "📖 <b>Что такое PINFL?</b>\n"
+            "PINFL (Персональный идентификационный номер налогоплательщика-физического лица) - "
+            "14-значный номер, используемый для идентификации граждан в Узбекистане.\n\n"
+        ),
+        "en": (
+            "📖 <b>What is PINFL?</b>\n"
+            "PINFL (Personal Identification Number for Individual Taxpayer) - "
+            "a 14-digit number used to identify citizens in Uzbekistan.\n\n"
+        ),
+    },
+    "help_structure": {
+        "uz": (
+            "🏗️ <b>PINFL tuzilishi (AABBCCDDEE FFGG H):</b>\n"
+            "• <b>AA</b> - Asr va jins kodi (1-8)\n"
+            "• <b>BB</b> - Tug'ilgan kun (01-31)\n"
+            "• <b>CC</b> - Tug'ilgan oy (01-12)\n"
+            "• <b>DD</b> - Tug'ilgan yilning so'nggi ikki raqami\n"
+            "• <b>EEE</b> - Hudud kodi (001-999)\n"
+            "• <b>FF</b> - Seriya raqami (001-999)\n"
+            "• <b>H</b> - Nazorat raqami (0-9)\n\n"
+        ),
+        "ru": (
+            "🏗️ <b>Структура PINFL (AABBCCDDEE FFGG H):</b>\n"
+            "• <b>A</b> - Код века и пола (1-8)\n"
+            "• <b>BB</b> - День рождения (01-31)\n"
+            "• <b>CC</b> - Месяц рождения (01-12)\n"
+            "• <b>DD</b> - Последние две цифры года рождения\n"
+            "• <b>EEE</b> - Код региона (001-999)\n"
+            "• <b>FFF</b> - Серийный номер (001-999)\n"
+            "• <b>H</b> - Контрольная цифра (0-9)\n\n"
+        ),
+        "en": (
+            "🏗️ <b>PINFL structure (AABBCCDDEE FFGG H):</b>\n"
+            "• <b>A</b> - Century and gender code (1-8)\n"
+            "• <b>BB</b> - Birth day (01-31)\n"
+            "• <b>CC</b> - Birth month (01-12)\n"
+            "• <b>DD</b> - Last two digits of birth year\n"
+            "• <b>EEE</b> - Area code (001-999)\n"
+            "• <b>FFF</b> - Serial number (001-999)\n"
+            "• <b>H</b> - Check digit (0-9)\n\n"
+        ),
+    },
+    "help_validation": {
+        "uz": (
+            "🔍 <b>Bot qanday tekshiradi:</b>\n"
+            "1. ✏️ Formatni tekshiradi (14 raqam)\n"
+            "2. 📅 Sananing to'g'riligini tekshiradi\n"
+            "3. 🔢 Nazorat raqamini hisoblaydi va taqqoslaydi\n"
+            "4. 🗺️ Hudud kodining 000 emasligini tekshiradi\n"
+            "5. 📄 Seriya raqamining 000 emasligini tekshiradi\n\n"
+        ),
+        "ru": (
+            "🔍 <b>Как бот проверяет:</b>\n"
+            "1. ✏️ Проверяет формат (14 цифр)\n"
+            "2. 📅 Проверяет корректность даты\n"
+            "3. 🔢 Вычисляет и сравнивает контрольную цифру\n"
+            "4. 🗺️ Проверяет, что код региона не 000\n"
+            "5. 📄 Проверяет, что серийный номер не 000\n\n"
+        ),
+        "en": (
+            "🔍 <b>How the bot validates:</b>\n"
+            "1. ✏️ Checks format (14 digits)\n"
+            "2. 📅 Validates date correctness\n"
+            "3. 🔢 Calculates and compares check digit\n"
+            "4. 🗺️ Ensures area code is not 000\n"
+            "5. 📄 Ensures serial number is not 000\n\n"
+        ),
     },
     "month_names": {
         "uz": [
