@@ -2,7 +2,7 @@
 
 [![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
 
-This project is a Telegram bot that analyzes PINFL (Personal Identification Number for Individual Taxpayer) entered by users and reports its validity, birth date, region code, and other parameters.
+This project is a Telegram bot that analyzes PINFL (Personal Identification Number for Individual Taxpayer) entered by users and provides detailed analysis including validity, structure breakdown, birth date, region code, and specific error descriptions.
 
 ## Why is this project needed?
 
@@ -10,20 +10,70 @@ PINFL is a unique identification number used in several countries to identify ci
 
 ## Features
 
-- **PINFL Validation**: Analyze PINFL numbers for validity and extract information
-- **PINFL Generation**: Generate random valid PINFL numbers for testing
-- **Multi-language Support**: Support for Uzbek (O'zbekcha), Russian (Русский), and English
-- **Database Integration**: SQLite database for user management and statistics
-- **Public Statistics**: Monthly statistics available to all users for transparency
-- **User Management**: Track user activity and preferences
+- **Detailed PINFL Analysis**: Comprehensive validation with structure breakdown and specific error identification
+- **Educational Information**: Built-in help system explaining PINFL structure and validation process
+- **PINFL Generation**: Generate random valid PINFL numbers for testing purposes
+- **Multi-language Support**: Full internationalization in Uzbek (O'zbekcha), Russian (Русский), and English
+- **Database Integration**: SQLite database for user management and request statistics
+- **Public Statistics**: Monthly statistics available to all users for transparency and trust
+- **User Management**: Automatic user registration and activity tracking
+- **Official Disclaimer**: Clear warnings about unofficial status and limitations
 
 ## Available Commands
 
-- `/start` - Start working with the bot
-- `/generate` - Generate random PINFL
-- `/language` - Choose interface language
-- `/stats` - Monthly statistics (public for transparency)
-- `/issues` - Report an issue
+- `/start` - Start working with the bot and view command overview
+- `/help` - Detailed information about PINFL structure and bot functionality
+- `/generate` - Generate random valid PINFL for testing
+- `/language` - Choose interface language (Uzbek/Russian/English)
+- `/stats` - View monthly usage statistics (public for transparency)
+- `/issues` - Report bugs or suggest improvements
+
+You can also send any 14-digit number directly to the bot for detailed PINFL analysis.
+
+## PINFL Analysis Features
+
+### Detailed Structure Breakdown
+When you send a PINFL to the bot, it provides:
+
+- **Visual Structure**: PINFL formatted with clear separators (e.g., `3 25 05 90 012 345 9`)
+- **Component Analysis**: Each part explained (century/gender, birth date, region code, serial number, check digit)
+- **Validation Results**: Clear indication of validity with specific error descriptions
+- **Birth Date Extraction**: Automatic date parsing and validation
+- **Error Identification**: Precise description of what's wrong with invalid PINFLs
+
+### Educational Content
+The `/help` command provides comprehensive information about:
+- What is PINFL and its purpose
+- Detailed structure explanation (14-digit format breakdown)
+- How the bot validates each component
+- Limitations and unofficial status disclaimer
+
+### Example Output
+
+**Valid PINFL:**
+```
+📋 PINFL structure:
+3 25 05 90 012 345 9
+
+🔢 Century/Gender: 3 (male, 19 century)
+📅 Day: 25
+📅 Month: 05
+📅 Year: 90 (1990 year)
+🗺️ Area code: 012
+🔢 Serial number: 345
+✅ Check digit: 9
+
+✅ PINFL is valid
+📅 1990-05-25
+```
+
+**Invalid PINFL:**
+```
+❌ PINFL is invalid
+
+🔍 Found errors:
+❌ Check digit error: 6 (expected: 9)
+```
 
 ## Supported Languages
 

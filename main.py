@@ -165,34 +165,97 @@ def language_callback(update, context):
 
 @with_user_context(log_request_type="analyze")
 def echo(update, context):
-    """Handle PINFL analysis."""
+    """Handle PINFL analysis with detailed breakdown."""
     user_id, user_lang, _ = get_user_context(context)
 
     pinfl_text = update.message.text.strip()
 
-    if pinfl_text.isdigit() and len(pinfl_text) == 14:
-        parser = PinflUtilitiesParser(pinfl_text)
-
-        if parser.is_valid():
-            response = get_text("pinfl_valid", user_lang, birth_date=parser.birth_date)
-        else:
-            response = get_text("pinfl_invalid_header", user_lang)
-
-            if not parser.is_valid_date():
-                response += get_text("invalid_date", user_lang)
-            if not parser.validate_check_digit():
-                correct_check_digit = parser.calculate_check_digit()
-                response += get_text(
-                    "invalid_check_digit", user_lang, correct_digit=correct_check_digit
-                )
-            if not parser.validate_area_code():
-                response += get_text("invalid_area_code", user_lang)
-            if not parser.validate_citizen_serial_number():
-                response += get_text("invalid_serial_number", user_lang)
-    else:
+    if not (pinfl_text.isdigit() and len(pinfl_text) == 14):
         response = get_text("pinfl_format_error", user_lang)
+        update.message.reply_text(response)
+        return
 
-    update.message.reply_text(response)
+    parser = PinflUtilitiesParser(pinfl_text)
+
+    # Add structure header
+    response = get_text("pinfl_structure_header", user_lang) + "\n"
+
+    # Format PINFL with visual separation
+    formatted_pinfl = f"<code>{pinfl_text[:1]} {pinfl_text[1:3]} {pinfl_text[3:5]} {pinfl_text[5:7]} {pinfl_text[7:10]} {pinfl_text[10:13]} {pinfl_text[13]}</code>\n\n"
+    response += formatted_pinfl
+
+    # Add structure breakdown
+    century_gender_value = pinfl_text[0]
+    gender_text = get_text(f"gender_{parser.gender}", user_lang)
+    century_num = parser.century // 100
+    response += (
+        get_text(
+            "pinfl_part_century_gender",
+            user_lang,
+            value=century_gender_value,
+            gender=gender_text,
+            century=century_num,
+        )
+        + "\n"
+    )
+
+    response += get_text("pinfl_part_day", user_lang, value=pinfl_text[1:3]) + "\n"
+    response += get_text("pinfl_part_month", user_lang, value=pinfl_text[3:5]) + "\n"
+    response += (
+        get_text(
+            "pinfl_part_year", user_lang, value=pinfl_text[5:7], full_year=parser.year
+        )
+        + "\n"
+    )
+    response += (
+        get_text("pinfl_part_area_code", user_lang, value=pinfl_text[7:10]) + "\n"
+    )
+    response += get_text("pinfl_part_serial", user_lang, value=pinfl_text[10:13]) + "\n"
+    response += (
+        get_text("pinfl_part_check_digit", user_lang, value=pinfl_text[13]) + "\n\n"
+    )
+
+    # Validation result
+    if parser.is_valid():
+        response += get_text("validation_result_valid", user_lang) + "\n"
+        if parser.birth_date:
+            response += f"📅 {parser.birth_date}"
+    else:
+        response += get_text("validation_result_invalid", user_lang) + "\n\n"
+        response += get_text("error_details_header", user_lang) + "\n"
+
+        # Check specific errors
+        if not parser.is_valid_date():
+            response += (
+                get_text(
+                    "error_date_invalid",
+                    user_lang,
+                    day=parser.day,
+                    month=parser.month,
+                    year=parser.year,
+                )
+                + "\n"
+            )
+
+        if not parser.validate_check_digit():
+            expected_digit = parser.calculate_check_digit()
+            response += (
+                get_text(
+                    "error_check_digit",
+                    user_lang,
+                    given=parser.check_digit,
+                    expected=expected_digit,
+                )
+                + "\n"
+            )
+
+        if not parser.validate_area_code():
+            response += get_text("error_area_code_zero", user_lang) + "\n"
+
+        if not parser.validate_citizen_serial_number():
+            response += get_text("error_serial_zero", user_lang) + "\n"
+
+    update.message.reply_text(response, parse_mode="HTML")
 
 
 @with_user_context(log_request_type="generate")
@@ -257,6 +320,21 @@ def stats(update, context):
 
 
 @with_user_context()
+def help_command(update, context):
+    """Handle help command."""
+    user_id, user_lang, _ = get_user_context(context)
+
+    # Build comprehensive help message
+    message = get_text("help_command_title", user_lang) + "\n\n"
+    message += get_text("help_what_is_pinfl", user_lang)
+    message += get_text("help_structure", user_lang)
+    message += get_text("help_validation", user_lang)
+    message += get_text("disclaimer", user_lang)
+
+    update.message.reply_text(message, parse_mode="HTML")
+
+
+@with_user_context()
 def issues(update, context):
     """Handle issues command."""
     user_id, user_lang, _ = get_user_context(context)
@@ -287,6 +365,7 @@ def main():
 
     # Command handlers
     dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("help", help_command))
     dp.add_handler(CommandHandler("generate", generate_pinfl))
     dp.add_handler(CommandHandler("language", language_command))
     dp.add_handler(CommandHandler("stats", stats))
