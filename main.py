@@ -170,7 +170,7 @@ def echo(update, context):
 
     pinfl_text = update.message.text.strip()
 
-    if pinfl_text.isdigit() and len(pinfl_text) >= 14:
+    if pinfl_text.isdigit() and len(pinfl_text) == 14:
         parser = PinflUtilitiesParser(pinfl_text)
 
         if parser.is_valid():

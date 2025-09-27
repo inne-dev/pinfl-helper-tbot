@@ -91,11 +91,11 @@ TRANSLATIONS = {
         ),
         "ru": (
             "Неверный PINFL. Проверьте, что он содержит только "
-            "цифры и имеет длину не менее 14 символов."
+            "цифры и имеет длину 14 символов."
         ),
         "en": (
             "Invalid PINFL. Check that it contains only "
-            "digits and is at least 14 characters long."
+            "digits and is exactly 14 characters long."
         ),
     },
     "generated_pinfl": {
