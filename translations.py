@@ -173,9 +173,9 @@ TRANSLATIONS = {
         "en": "📋 <b>PINFL structure:</b>",
     },
     "pinfl_part_century_gender": {
-        "uz": "🔢 Asr/Jins: <code>{value}</code> ({gender}, {century} asr)",
-        "ru": "🔢 Век/Пол: <code>{value}</code> ({gender}, {century} век)",
-        "en": "🔢 Century/Gender: <code>{value}</code> ({gender}, {century} century)",
+        "uz": "🔢 Millennium/Jins: <code>{value}</code> ({gender}, {century} Millennium)",
+        "ru": "🔢 Миллениум/Пол: <code>{value}</code> ({gender}, {century} миллениум)",
+        "en": "🔢 Mingyillik/Gender: <code>{value}</code> ({gender}, {century} mingyillik)",
     },
     "pinfl_part_day": {
         "uz": "📅 Kun: <code>{value}</code>",
