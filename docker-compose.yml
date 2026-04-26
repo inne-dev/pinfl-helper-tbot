@@ -1,11 +1,57 @@
 services:
+  health-checker:
+    build: .
+    command: python health_checker.py
+    container_name: pinfl-health-checker
+    restart: unless-stopped
+    environment:
+      - BOT_CONTAINER_NAME=pinfl-helper-tbot
+      - VPN_CHECK_INTERVAL=${VPN_CHECK_INTERVAL:-15}
+      - VPN_CONFIG_FILE=/app/data/v2ray_config.json
+      - VPN_STATE_FILE=/app/data/vpn_state.json
+      - VPN_TOKEN=${VPN_TOKEN}
+      - V2RAY_BINARY=/usr/local/bin/v2ray
+      - HEALTH_PORT=8080
+    volumes:
+      - ./data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/ready', timeout=5)"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 1200s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   pinfl-helper-tbot:
     build: .
     container_name: pinfl-helper-tbot
     restart: unless-stopped
+    depends_on:
+      health-checker:
+        condition: service_healthy
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - ISSUE_LINK=${ISSUE_LINK:-https://github.com/your-repo/issues}
+      - MINI_APP_FORMS_ENABLED=${MINI_APP_FORMS_ENABLED:-false}
+      - MINI_APP_FORMS_LAUNCH_URL=${MINI_APP_FORMS_LAUNCH_URL:-}
+      - MINI_APP_FORMS_STREAM_URL=${MINI_APP_FORMS_STREAM_URL:-}
+      - MINI_APP_FORMS_WEBHOOK_SECRET=${MINI_APP_FORMS_WEBHOOK_SECRET:-}
+      - MINI_APP_FORMS_BIRTH_DATE_FIELD_ID=${MINI_APP_FORMS_BIRTH_DATE_FIELD_ID:-}
+      - MINI_APP_FORMS_GENDER_FIELD_ID=${MINI_APP_FORMS_GENDER_FIELD_ID:-}
+      - MINI_APP_FORMS_AREA_CODE_FIELD_ID=${MINI_APP_FORMS_AREA_CODE_FIELD_ID:-}
+      - MINI_APP_FORMS_SERIAL_NUMBER_FIELD_ID=${MINI_APP_FORMS_SERIAL_NUMBER_FIELD_ID:-}
+      - VPN_STATE_FILE=/app/data/vpn_state.json
+      - HTTP_PROXY=socks5h://health-checker:1080
+      - HTTPS_PROXY=socks5h://health-checker:1080
+      - ALL_PROXY=socks5h://health-checker:1080
+      - NO_PROXY=localhost,127.0.0.1
     volumes:
       - ./data:/app/data
     working_dir: /app

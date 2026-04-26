@@ -14,6 +14,7 @@ TRANSLATIONS = {
             "/start - Bot bilan ishlashni boshlash\n"
             "/help - Bot haqida ma'lumot\n"
             "/generate - Tasodifiy PINFL yaratish\n"
+            "/generate_custom - Mini app orqali maxsus PINFL yaratish\n"
             "/language - Tilni tanlash\n"
             "/stats - Oylik statistika (shaffoflik uchun)\n"
             "/issues - Muammo haqida xabar berish\n"
@@ -25,6 +26,7 @@ TRANSLATIONS = {
             "/start - Начать работу с ботом\n"
             "/help - Информация о боте\n"
             "/generate - Сгенерировать случайный PINFL\n"
+            "/generate_custom - Открыть mini app для кастомного PINFL\n"
             "/language - Выбрать язык\n"
             "/stats - Месячная статистика (для прозрачности)\n"
             "/issues - Сообщить о проблеме\n"
@@ -36,6 +38,7 @@ TRANSLATIONS = {
             "/start - Start working with the bot\n"
             "/help - Information about the bot\n"
             "/generate - Generate random PINFL\n"
+            "/generate_custom - Open mini app for custom PINFL\n"
             "/language - Choose language\n"
             "/stats - Monthly statistics (for transparency)\n"
             "/issues - Report an issue\n"
@@ -105,6 +108,79 @@ TRANSLATIONS = {
         "uz": "Tug'ilgan sana: {birth_date}\nJins: #{gender}",
         "ru": "Дата рождения: {birth_date}\nПол: #{gender}",
         "en": "Date of birth: {birth_date}\nGender: #{gender}",
+    },
+    "custom_pinfl_generated": {
+        "uz": (
+            "🧩 <b>Mini app so'rovi bo'yicha maxsus PINFL yaratildi</b>\n"
+            "<pre>{pinfl}</pre>\n"
+            "Tug'ilgan sana: {birth_date}\n"
+            "Jins: #{gender}\n"
+            "Hudud kodi: {area_code}\n"
+            "Seriya raqami: {serial_number}"
+        ),
+        "ru": (
+            "🧩 <b>Создан кастомный PINFL по заявке из mini app</b>\n"
+            "<pre>{pinfl}</pre>\n"
+            "Дата рождения: {birth_date}\n"
+            "Пол: #{gender}\n"
+            "Код региона: {area_code}\n"
+            "Серийный номер: {serial_number}"
+        ),
+        "en": (
+            "🧩 <b>Custom PINFL generated from mini app request</b>\n"
+            "<pre>{pinfl}</pre>\n"
+            "Date of birth: {birth_date}\n"
+            "Gender: #{gender}\n"
+            "Area code: {area_code}\n"
+            "Serial number: {serial_number}"
+        ),
+    },
+    "generate_custom_open_mini_app": {
+        "uz": (
+            "Mini app formani oching, parametrlarni kiriting, yuboring.\n"
+            "PINFL tayyor bo'lgach bot sizga javob yuboradi."
+        ),
+        "ru": (
+            "Откройте mini app форму, заполните поля и отправьте.\n"
+            "После обработки бот пришлет вам PINFL."
+        ),
+        "en": (
+            "Open mini app form, fill fields, and submit.\n"
+            "Bot will send generated PINFL after processing."
+        ),
+    },
+    "generate_custom_open_button": {
+        "uz": "Mini appni ochish",
+        "ru": "Открыть mini app",
+        "en": "Open mini app",
+    },
+    "generate_custom_not_configured": {
+        "uz": (
+            "Mini app URL sozlanmagan. Administrator `MINI_APP_FORMS_LAUNCH_URL` ni "
+            "o'rnatishi kerak."
+        ),
+        "ru": (
+            "URL mini app не настроен. Администратор должен задать "
+            "`MINI_APP_FORMS_LAUNCH_URL`."
+        ),
+        "en": (
+            "Mini app URL is not configured. Admin must set "
+            "`MINI_APP_FORMS_LAUNCH_URL`."
+        ),
+    },
+    "generate_custom_https_required": {
+        "uz": (
+            "Mini app ochilishi uchun `MINI_APP_FORMS_LAUNCH_URL` HTTPS bo'lishi kerak "
+            "(https://...)."
+        ),
+        "ru": (
+            "Для открытия mini app `MINI_APP_FORMS_LAUNCH_URL` должен быть HTTPS "
+            "(https://...)."
+        ),
+        "en": (
+            "To open mini app, `MINI_APP_FORMS_LAUNCH_URL` must be HTTPS "
+            "(https://...)."
+        ),
     },
     "gender_male": {"uz": "erkak", "ru": "мужской", "en": "male"},
     "gender_female": {"uz": "ayol", "ru": "женский", "en": "female"},

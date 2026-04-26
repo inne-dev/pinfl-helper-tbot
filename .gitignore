@@ -46,3 +46,8 @@ ENV/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+data/v2ray.log
+data/v2ray.pid
+data/v2ray_config.json
+data/vpn_state.json
+data/v2ray_probe_config.json

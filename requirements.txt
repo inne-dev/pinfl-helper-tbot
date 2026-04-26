@@ -1,1 +1,5 @@
 python-telegram-bot==13.15
+requests==2.32.3
+sseclient-py==1.8.0
+docker==7.1.0
+PySocks==1.7.1

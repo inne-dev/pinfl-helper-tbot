@@ -1,10 +1,14 @@
 """Module providing receiving requests from users in a telegram bot."""
 
 import datetime
+import json
 import os
 import random
+import threading
+import time
 from functools import wraps
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+from telegram.error import NetworkError
 from telegram.ext import (
     Updater,
     CommandHandler,
@@ -16,9 +20,33 @@ from pinfl_utilities_generator import PinflUtilitiesGenerator
 from pinfl_utilities_parser import PinflUtilitiesParser
 from database import Database
 from translations import get_text, get_month_name, LANGUAGES
+from mini_app_forms import (
+    MiniAppFormProcessor,
+    MiniAppFormsListener,
+    build_mini_app_launch_url,
+    build_telegram_client_context,
+    mini_app_forms_enabled,
+)
 
 # Initialize database
 db = Database()
+
+def _build_request_kwargs():
+    """Build Telegram request kwargs, forcing bot API traffic through proxy when set."""
+    proxy_url = (
+        os.environ.get("ALL_PROXY")
+        or os.environ.get("HTTPS_PROXY")
+        or os.environ.get("HTTP_PROXY")
+        or os.environ.get("all_proxy")
+        or os.environ.get("https_proxy")
+        or os.environ.get("http_proxy")
+    )
+
+    if not proxy_url:
+        return {}
+
+    return {"proxy_url": proxy_url}
+
 
 # Statistics are available to all users for transparency and interest
 
@@ -286,6 +314,43 @@ def generate_pinfl(update, context):
     )
 
 
+@with_user_context(log_request_type="generate")
+def generate_custom_pinfl(update, context):
+    """Handle custom PINFL generation command through mini app."""
+    user_id, user_lang, _ = get_user_context(context)
+
+    base_url = os.environ.get("MINI_APP_FORMS_LAUNCH_URL", "").strip()
+    if not base_url:
+        update.message.reply_text(get_text("generate_custom_not_configured", user_lang))
+        return
+    if not base_url.lower().startswith("https://"):
+        update.message.reply_text(get_text("generate_custom_https_required", user_lang))
+        return
+
+    telegram_client_context = build_telegram_client_context(
+        user_id=user_id,
+        user_lang=user_lang,
+        telegram_user=update.effective_user,
+    )
+    mini_app_url = build_mini_app_launch_url(base_url, telegram_client_context)
+
+    reply_markup = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    get_text("generate_custom_open_button", user_lang),
+                    web_app=WebAppInfo(url=mini_app_url),
+                )
+            ]
+        ]
+    )
+    update.message.reply_text(
+        get_text("generate_custom_open_mini_app", user_lang),
+        parse_mode="HTML",
+        reply_markup=reply_markup,
+    )
+
+
 @with_user_context()
 def stats(update, context):
     """Handle statistics command (available to all users)."""
@@ -353,6 +418,85 @@ def error_handler(update, context):
     print(f"Traceback: {traceback.format_exc()}")
 
 
+def start_mini_app_forms_listener(updater):
+    """Start optional mini-app forms SSE listener in a background thread."""
+    if not mini_app_forms_enabled():
+        return
+
+    stream_url = os.environ.get("MINI_APP_FORMS_STREAM_URL", "").strip()
+    webhook_secret = os.environ.get("MINI_APP_FORMS_WEBHOOK_SECRET", "").strip()
+    if not stream_url or not webhook_secret:
+        print(
+            "Mini-app forms listener skipped: MINI_APP_FORMS_STREAM_URL or "
+            "MINI_APP_FORMS_WEBHOOK_SECRET is not set"
+        )
+        return
+
+    processor = MiniAppFormProcessor(
+        birth_date_field_id=os.environ.get(
+            "MINI_APP_FORMS_BIRTH_DATE_FIELD_ID", "",
+        ),
+        gender_field_id=os.environ.get(
+            "MINI_APP_FORMS_GENDER_FIELD_ID", "",
+        ),
+        area_code_field_id=os.environ.get(
+            "MINI_APP_FORMS_AREA_CODE_FIELD_ID", "",
+        ),
+        serial_number_field_id=os.environ.get(
+            "MINI_APP_FORMS_SERIAL_NUMBER_FIELD_ID", "",
+        ),
+    )
+
+    def on_pinfl_generated(generation_data):
+        tg_user_id = generation_data.get("tg_user_id")
+        if not tg_user_id:
+            print(
+                "Mini-app form response received without tg_user_id; "
+                "PINFL generated but not sent"
+            )
+            return
+
+        try:
+            user_lang = generation_data.get("language_code", "ru")
+            gender = generation_data.get("gender", "male")
+            gender_text = get_text(f"gender_{gender}", user_lang)
+            message = get_text(
+                "custom_pinfl_generated",
+                user_lang,
+                pinfl=generation_data["pinfl"],
+                birth_date=generation_data["birth_date"],
+                gender=gender_text,
+                area_code=generation_data["area_code"],
+                serial_number=generation_data["serial_number"],
+            )
+            updater.bot.send_message(
+                chat_id=int(tg_user_id),
+                text=message,
+                parse_mode="HTML",
+            )
+        except Exception as error:  # pylint: disable=broad-except
+            print(f"Mini-app PINFL delivery failed: {error}")
+
+    listener = MiniAppFormsListener(
+        stream_url=stream_url,
+        webhook_secret=webhook_secret,
+        processor=processor,
+        on_pinfl_generated=on_pinfl_generated,
+        start_from_now=os.environ.get("MINI_APP_FORMS_START_FROM_NOW", "true")
+        .strip()
+        .lower()
+        in {"1", "true", "yes", "on"},
+        transport=os.environ.get("MINI_APP_FORMS_TRANSPORT", "sse"),
+        poll_interval_seconds=int(
+            os.environ.get("MINI_APP_FORMS_POLL_INTERVAL_SECONDS", "3")
+        ),
+    )
+
+    listener_thread = threading.Thread(target=listener.run_forever, daemon=True)
+    listener_thread.start()
+    print("Mini-app forms listener started")
+
+
 def main():
     """Entry point."""
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
@@ -360,13 +504,14 @@ def main():
         print("Error: TELEGRAM_BOT_TOKEN environment variable is not set")
         return
 
-    updater = Updater(token, use_context=True)
+    updater = Updater(token, request_kwargs=_build_request_kwargs(), use_context=True)
     dp = updater.dispatcher
 
     # Command handlers
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help_command))
     dp.add_handler(CommandHandler("generate", generate_pinfl))
+    dp.add_handler(CommandHandler("generate_custom", generate_custom_pinfl))
     dp.add_handler(CommandHandler("language", language_command))
     dp.add_handler(CommandHandler("stats", stats))
     dp.add_handler(CommandHandler("issues", issues))
@@ -380,10 +525,24 @@ def main():
     # Error handler
     dp.add_error_handler(error_handler)
 
-    print("Bot launched successfully")
+    listener_started = False
 
-    updater.start_polling()
-    updater.idle()
+    while True:
+        try:
+            updater.start_polling()
+            if not listener_started:
+                start_mini_app_forms_listener(updater)
+                listener_started = True
+            print("Bot launched successfully")
+            updater.idle()
+            return
+        except NetworkError as exc:
+            print(f"Telegram via VPN unreachable, retry in 5s: {exc}")
+            try:
+                updater.stop()
+            except Exception:
+                pass
+            time.sleep(5)
 
 
 if __name__ == "__main__":

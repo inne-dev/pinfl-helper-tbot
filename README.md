@@ -13,6 +13,7 @@ PINFL is a unique identification number used in several countries to identify ci
 - **Detailed PINFL Analysis**: Comprehensive validation with structure breakdown and specific error identification
 - **Educational Information**: Built-in help system explaining PINFL structure and validation process
 - **PINFL Generation**: Generate random valid PINFL numbers for testing purposes
+- **Custom PINFL via Mini App Forms**: Build PINFL with user-selected date, gender, area code, and serial number from SSE form responses
 - **Multi-language Support**: Full internationalization in Uzbek (O'zbekcha), Russian (Русский), and English
 - **Database Integration**: SQLite database for user management and request statistics
 - **Public Statistics**: Monthly statistics available to all users for transparency and trust
@@ -24,6 +25,7 @@ PINFL is a unique identification number used in several countries to identify ci
 - `/start` - Start working with the bot and view command overview
 - `/help` - Detailed information about PINFL structure and bot functionality
 - `/generate` - Generate random valid PINFL for testing
+- `/generate_custom` - Open mini app form for custom PINFL generation
 - `/language` - Choose interface language (Uzbek/Russian/English)
 - `/stats` - View monthly usage statistics (public for transparency)
 - `/issues` - Report bugs or suggest improvements
@@ -102,6 +104,17 @@ docker-compose up -d
 
 - `TELEGRAM_BOT_TOKEN` - Your Telegram Bot API token (required)
 - `ISSUE_LINK` - Link to your project's issue tracker (optional)
+- `MINI_APP_FORMS_ENABLED` - Enable mini app form stream listener (`true/false`, optional)
+- `MINI_APP_FORMS_LAUNCH_URL` - Mini app URL for `/generate_custom` inline button
+- `MINI_APP_FORMS_STREAM_URL` - SSE endpoint URL for form responses (required if feature enabled)
+- `MINI_APP_FORMS_WEBHOOK_SECRET` - Secret for `X-Wappy-Webhook-Secret` header (required if feature enabled)
+- `MINI_APP_FORMS_START_FROM_NOW` - Start listener from current moment (`true` by default, avoids replay spam)
+- `MINI_APP_FORMS_TRANSPORT` - `sse` (default) or `poll`
+- `MINI_APP_FORMS_POLL_INTERVAL_SECONDS` - Poll interval in seconds (default `3`)
+- `MINI_APP_FORMS_BIRTH_DATE_FIELD_ID` - Form field id for birth date (optional, has default)
+- `MINI_APP_FORMS_GENDER_FIELD_ID` - Form field id for gender (optional, has default)
+- `MINI_APP_FORMS_AREA_CODE_FIELD_ID` - Form field id for area code (optional, has default)
+- `MINI_APP_FORMS_SERIAL_NUMBER_FIELD_ID` - Form field id for serial number (optional, has default)
 
 
 
@@ -113,6 +126,24 @@ The bot uses SQLite database to store:
 - Activity tracking
 
 Database file is stored in `data/pinfl_bot.db` and is persisted through Docker volumes.
+
+## Mini App Forms Integration
+
+When `MINI_APP_FORMS_ENABLED=true`, bot starts background SSE listener and handles
+`form.response.created` events from mini app forms.
+
+For weak servers/ngrok, prefer poll transport:
+- `MINI_APP_FORMS_TRANSPORT=poll`
+- `MINI_APP_FORMS_STREAM_URL=.../responses_poll`
+
+Expected payload fields:
+- Birth date in `YYYY-MM-DD` format
+- Gender (`male/female`, `Мужской/Женский`, `erkak/ayol`)
+- Area code (`001-999`)
+- Serial number (`001-999`)
+
+After event processing bot generates valid PINFL and sends result to `tg_user_id`
+from event context.
 
 ## Statistics
 

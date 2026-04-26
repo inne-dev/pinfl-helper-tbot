@@ -14,6 +14,11 @@ from database import Database
 from translations import get_text, get_month_name, LANGUAGES
 from pinfl_utilities_generator import PinflUtilitiesGenerator
 from pinfl_utilities_parser import PinflUtilitiesParser
+from mini_app_forms import (
+    MiniAppFormProcessor,
+    build_mini_app_launch_url,
+    build_telegram_client_context,
+)
 
 
 class TestDatabase(unittest.TestCase):
@@ -176,6 +181,181 @@ class TestPinflUtilities(unittest.TestCase):
             parser.validate_citizen_serial_number()
         except Exception as e:
             self.fail(f"Validation methods should not throw exceptions: {e}")
+
+    def test_custom_pinfl_generation(self):
+        """Test custom PINFL generation with selected fields."""
+        generator = PinflUtilitiesGenerator()
+        birth_date = date(1990, 5, 15)
+
+        pinfl = generator.generate_custom(
+            gender="female",
+            birth_date=birth_date,
+            area_code="100",
+            serial_number=200,
+        )
+
+        self.assertEqual(len(pinfl), 14)
+        self.assertTrue(pinfl.isdigit())
+        self.assertEqual(pinfl[1:3], "15")
+        self.assertEqual(pinfl[3:5], "05")
+        self.assertEqual(pinfl[5:7], "90")
+        self.assertEqual(pinfl[7:10], "100")
+        self.assertEqual(pinfl[10:13], "200")
+
+        parser = PinflUtilitiesParser(pinfl)
+        self.assertTrue(parser.is_valid())
+
+    def test_custom_pinfl_generation_validation(self):
+        """Test custom PINFL generation input validation."""
+        generator = PinflUtilitiesGenerator()
+        birth_date = date(1990, 5, 15)
+
+        with self.assertRaises(ValueError):
+            generator.generate_custom("male", birth_date, area_code=0, serial_number=1)
+
+        with self.assertRaises(ValueError):
+            generator.generate_custom(
+                "male", birth_date, area_code=1, serial_number="abc"
+            )
+
+
+class TestMiniAppForms(unittest.TestCase):
+    """Tests for mini app forms payload processing."""
+
+    def setUp(self):
+        self.processor = MiniAppFormProcessor(
+            birth_date_field_id="birth_date_field",
+            gender_field_id="gender_field",
+            area_code_field_id="area_code_field",
+            serial_number_field_id="serial_number_field",
+        )
+
+    def test_process_payload_success(self):
+        """Process valid form payload and generate PINFL."""
+        payload = {
+            "event": "form.response.created",
+            "response": {
+                "id": "response_uuid",
+                "respondent_id": "external_user_123",
+                "lang": "en",
+                "data": {
+                    "birth_date_field": "1990-05-15",
+                    "gender_field": "Мужской",
+                    "area_code_field": 100,
+                    "serial_number_field": "200",
+                },
+                "context": {"tg_user_id": "123456789", "tg_language_code": "en"},
+            },
+        }
+
+        result = self.processor.process_payload(payload)
+        self.assertIsNotNone(result)
+        self.assertEqual(result["birth_date"], "1990-05-15")
+        self.assertEqual(result["gender"], "male")
+        self.assertEqual(result["area_code"], "100")
+        self.assertEqual(result["serial_number"], "200")
+        self.assertEqual(result["tg_user_id"], "123456789")
+
+        parser = PinflUtilitiesParser(result["pinfl"])
+        self.assertTrue(parser.is_valid())
+        self.assertEqual(parser.area_code, "100")
+        self.assertEqual(parser.citizen_serial_number, "200")
+
+    def test_process_payload_invalid_gender(self):
+        """Reject payload with unknown gender value."""
+        payload = {
+            "event": "form.response.created",
+            "response": {
+                "data": {
+                    "birth_date_field": "1990-05-15",
+                    "gender_field": "unknown",
+                    "area_code_field": 100,
+                    "serial_number_field": 200,
+                },
+            },
+        }
+
+        with self.assertRaises(ValueError):
+            self.processor.process_payload(payload)
+
+    def test_process_payload_user_id_fallback(self):
+        """Use user_id when tg_user_id is missing in context."""
+        payload = {
+            "event": "form.response.created",
+            "response": {
+                "id": "response_uuid",
+                "lang": "ru",
+                "data": {
+                    "birth_date_field": "1991-06-16",
+                    "gender_field": "female",
+                    "area_code_field": "101",
+                    "serial_number_field": "201",
+                },
+                "context": {"user_id": "987654321"},
+            },
+        }
+
+        result = self.processor.process_payload(payload)
+        self.assertIsNotNone(result)
+        self.assertEqual(result["tg_user_id"], "987654321")
+
+    def test_process_payload_respondent_id_fallback(self):
+        """Use respondent_id when context does not include explicit telegram ids."""
+        payload = {
+            "event": "form.response.created",
+            "response": {
+                "id": "response_uuid",
+                "respondent_id": "123123123",
+                "lang": "ru",
+                "data": {
+                    "birth_date_field": "1991-06-16",
+                    "gender_field": "female",
+                    "area_code_field": "101",
+                    "serial_number_field": "201",
+                },
+                "context": {},
+            },
+        }
+
+        result = self.processor.process_payload(payload)
+        self.assertIsNotNone(result)
+        self.assertEqual(result["tg_user_id"], "123123123")
+
+    def test_build_telegram_client_context(self):
+        """Build robust context payload for mini app launch URL."""
+        telegram_user = Mock(
+            id=123456789,
+            first_name="John",
+            last_name="Doe",
+            username="john_doe",
+            language_code="en",
+            is_bot=False,
+        )
+
+        context = build_telegram_client_context(
+            user_id=telegram_user.id, user_lang="ru", telegram_user=telegram_user
+        )
+
+        self.assertEqual(context["tg_user_id"], "123456789")
+        self.assertEqual(context["user_id"], "123456789")
+        self.assertEqual(context["external_user_id"], "123456789")
+        self.assertEqual(context["tg_language_code"], "en")
+        self.assertEqual(context["lang"], "en")
+        self.assertEqual(context["tg_first_name"], "John")
+        self.assertEqual(context["tg_last_name"], "Doe")
+        self.assertEqual(context["tg_username"], "john_doe")
+        self.assertEqual(context["tg_is_bot"], "false")
+
+    def test_build_mini_app_launch_url_merges_query(self):
+        """Keep existing query params and append telegram client context."""
+        base_url = "https://example.com/forms/123?campaign=spring"
+        params = {"tg_user_id": "42", "lang": "ru"}
+
+        launch_url = build_mini_app_launch_url(base_url, params)
+
+        self.assertIn("campaign=spring", launch_url)
+        self.assertIn("tg_user_id=42", launch_url)
+        self.assertIn("lang=ru", launch_url)
 
 
 class TestBotLogic(unittest.TestCase):
