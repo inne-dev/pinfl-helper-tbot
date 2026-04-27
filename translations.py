@@ -10,39 +10,40 @@ TRANSLATIONS = {
     "start_message": {
         "uz": (
             "Salom! PINFL tahlil qilish uchun menga yuboring va men uning to'g'ri yoki noto'g'ri ekanligini aytaman.\n"
-            "Mavjud buyruqlar:\n"
+            "Mavjud buyruqlar:\n\n"
+            "/generate - Tasodifiy PINFL yaratish\n"
+            "/generate_custom - Muayyan qiymatlar bilan PINFL yarating\n"
+            "Yoki tahlil qilish uchun oddiy xabar sifatida PINFL yuborishingiz mumkin.\n\n"
             "/start - Bot bilan ishlashni boshlash\n"
             "/help - Bot haqida ma'lumot\n"
-            "/generate - Tasodifiy PINFL yaratish\n"
-            "/generate_custom - Mini app orqali maxsus PINFL yaratish\n"
             "/language - Tilni tanlash\n"
-            "/stats - Oylik statistika (shaffoflik uchun)\n"
+            "/stats - Oylik statistika\n"
             "/issues - Muammo haqida xabar berish\n"
-            "Yoki tahlil qilish uchun oddiy xabar sifatida PINFL yuborishingiz mumkin."
         ),
         "ru": (
             "Привет! Отправь мне PINFL для анализа и я скажу валидный он или нет.\n"
-            "Доступные команды:\n"
+            "Доступные команды:\n\n"
+            "/generate - Сгенерировать случайный PINFL\n"
+            "/generate_custom - Создать PINFL с определенными значениями\n"
+            "Или вы можете отправить мне PINFL для анализа обычным сообщением.\n\n"
             "/start - Начать работу с ботом\n"
             "/help - Информация о боте\n"
-            "/generate - Сгенерировать случайный PINFL\n"
-            "/generate_custom - Открыть mini app для кастомного PINFL\n"
             "/language - Выбрать язык\n"
-            "/stats - Месячная статистика (для прозрачности)\n"
-            "/issues - Сообщить о проблеме\n"
-            "Или вы можете отправить мне PINFL для анализа обычным сообщением."
+            "/stats - Месячная статистика\n"
+            "/issues - Сообщить о проблеме"
+
         ),
         "en": (
             "Hello! Send me a PINFL for analysis and I'll tell you if it's valid or not.\n"
-            "Available commands:\n"
+            "Available commands:\n\n"
+            "/generate - Generate random PINFL\n"
+            "/generate_custom - Generate PINFL with specific values\n"
+            "Or you can send me PINFL as a regular message for analysis.\n\n"
             "/start - Start working with the bot\n"
             "/help - Information about the bot\n"
-            "/generate - Generate random PINFL\n"
-            "/generate_custom - Open mini app for custom PINFL\n"
             "/language - Choose language\n"
-            "/stats - Monthly statistics (for transparency)\n"
-            "/issues - Report an issue\n"
-            "Or you can send me PINFL as a regular message for analysis."
+            "/stats - Monthly statistics\n"
+            "/issues - Report an issue"
         ),
     },
     "language_selection": {
@@ -111,7 +112,7 @@ TRANSLATIONS = {
     },
     "custom_pinfl_generated": {
         "uz": (
-            "🧩 <b>Mini app so'rovi bo'yicha maxsus PINFL yaratildi</b>\n"
+            "<b>Kastomnyy PINFL:</b>\n"
             "<pre>{pinfl}</pre>\n"
             "Tug'ilgan sana: {birth_date}\n"
             "Jins: #{gender}\n"
@@ -119,7 +120,7 @@ TRANSLATIONS = {
             "Seriya raqami: {serial_number}"
         ),
         "ru": (
-            "🧩 <b>Создан кастомный PINFL по заявке из mini app</b>\n"
+            "<b>Кастомный PINFL по заявке:</b>\n"
             "<pre>{pinfl}</pre>\n"
             "Дата рождения: {birth_date}\n"
             "Пол: #{gender}\n"
@@ -127,7 +128,7 @@ TRANSLATIONS = {
             "Серийный номер: {serial_number}"
         ),
         "en": (
-            "🧩 <b>Custom PINFL generated from mini app request</b>\n"
+            "<b>Custom PINFL:</b>\n"
             "<pre>{pinfl}</pre>\n"
             "Date of birth: {birth_date}\n"
             "Gender: #{gender}\n"
@@ -137,22 +138,22 @@ TRANSLATIONS = {
     },
     "generate_custom_open_mini_app": {
         "uz": (
-            "Mini app formani oching, parametrlarni kiriting, yuboring.\n"
+            "Zapolnite formula\n"
             "PINFL tayyor bo'lgach bot sizga javob yuboradi."
         ),
         "ru": (
-            "Откройте mini app форму, заполните поля и отправьте.\n"
+            "Заполните форму\n"
             "После обработки бот пришлет вам PINFL."
         ),
         "en": (
-            "Open mini app form, fill fields, and submit.\n"
+            "Fill out the form.\n"
             "Bot will send generated PINFL after processing."
         ),
     },
     "generate_custom_open_button": {
-        "uz": "Mini appni ochish",
-        "ru": "Открыть mini app",
-        "en": "Open mini app",
+        "uz": "Shaklni ochish",
+        "ru": "Открыть Форму",
+        "en": "Open Form",
     },
     "generate_custom_not_configured": {
         "uz": (

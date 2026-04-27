@@ -25,7 +25,7 @@ PINFL is a unique identification number used in several countries to identify ci
 - `/start` - Start working with the bot and view command overview
 - `/help` - Detailed information about PINFL structure and bot functionality
 - `/generate` - Generate random valid PINFL for testing
-- `/generate_custom` - Open mini app form for custom PINFL generation
+- `/generate_custom` - Generate PINFL with specific values
 - `/language` - Choose interface language (Uzbek/Russian/English)
 - `/stats` - View monthly usage statistics (public for transparency)
 - `/issues` - Report bugs or suggest improvements
