@@ -470,7 +470,7 @@ def start_mini_app_forms_listener(updater):
             birth_date = generation_data.get("birth_date")
             area_code = generation_data.get("area_code")
             serial_number = generation_data.get("serial_number")
-            wappy_url = os.environ.get("MINI_APP_FORMS_LAUNCH_URL", "https://wappy.space")
+            wappy_url = "https://wappy.space"
             logger.info(f"Generator attributes: birth_date={birth_date}, gender={gender}, area_code={area_code}, serial_number={serial_number}")
             message = get_text(
                 "custom_pinfl_generated",
