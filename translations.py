@@ -9,8 +9,8 @@ LANGUAGES = {"uz": "O'zbekcha", "ru": "Русский", "en": "English"}
 TRANSLATIONS = {
     "start_message": {
         "uz": (
-            "Salom! PINFL tahlil qilish uchun menga yuboring va men uning to'g'ri yoki noto'g'ri ekanligini aytaman.\n"
-            "Mavjud buyruqlar:\n\n"
+            "Salom! PINFL tahlil qilish uchun menga yuboring va men uning to'g'ri yoki noto'g'ri ekanligini aytaman.\n\n"
+            "Mavjud buyruqlar:\n"
             "/generate - Tasodifiy PINFL yaratish\n"
             "/generate_custom - Muayyan qiymatlar bilan PINFL yarating\n"
             "Yoki tahlil qilish uchun oddiy xabar sifatida PINFL yuborishingiz mumkin.\n\n"
@@ -21,8 +21,8 @@ TRANSLATIONS = {
             "/issues - Muammo haqida xabar berish\n"
         ),
         "ru": (
-            "Привет! Отправь мне PINFL для анализа и я скажу валидный он или нет.\n"
-            "Доступные команды:\n\n"
+            "Привет! Отправь мне PINFL для анализа и я скажу валидный он или нет.\n\n"
+            "Доступные команды:\n"
             "/generate - Сгенерировать случайный PINFL\n"
             "/generate_custom - Создать PINFL с определенными значениями\n"
             "Или вы можете отправить мне PINFL для анализа обычным сообщением.\n\n"
@@ -34,8 +34,8 @@ TRANSLATIONS = {
 
         ),
         "en": (
-            "Hello! Send me a PINFL for analysis and I'll tell you if it's valid or not.\n"
-            "Available commands:\n\n"
+            "Hello! Send me a PINFL for analysis and I'll tell you if it's valid or not.\n\n"
+            "Available commands:\n"
             "/generate - Generate random PINFL\n"
             "/generate_custom - Generate PINFL with specific values\n"
             "Or you can send me PINFL as a regular message for analysis.\n\n"
@@ -117,7 +117,8 @@ TRANSLATIONS = {
             "Tug'ilgan sana: {birth_date}\n"
             "Jins: #{gender}\n"
             "Hudud kodi: {area_code}\n"
-            "Seriya raqami: {serial_number}"
+            "Seriya raqami: {serial_number}\n\n"
+            "Forma wappy.space xizmati yordamida yaratildi."
         ),
         "ru": (
             "<b>Кастомный PINFL по заявке:</b>\n"
@@ -125,7 +126,8 @@ TRANSLATIONS = {
             "Дата рождения: {birth_date}\n"
             "Пол: #{gender}\n"
             "Код региона: {area_code}\n"
-            "Серийный номер: {serial_number}"
+            "Серийный номер: {serial_number}\n\n"
+            "Форма создана с помощью сервиса wappy.space"
         ),
         "en": (
             "<b>Custom PINFL:</b>\n"
@@ -133,7 +135,8 @@ TRANSLATIONS = {
             "Date of birth: {birth_date}\n"
             "Gender: #{gender}\n"
             "Area code: {area_code}\n"
-            "Serial number: {serial_number}"
+            "Serial number: {serial_number}\n\n"
+            "The form was created using the wappy.space service"
         ),
     },
     "generate_custom_open_mini_app": {
