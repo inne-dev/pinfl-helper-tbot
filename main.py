@@ -420,9 +420,12 @@ def error_handler(update, context):
 
 def start_mini_app_forms_listener(updater):
     """Start optional mini-app forms SSE listener in a background thread."""
+    print("Starting mini-app forms listener")
     if not mini_app_forms_enabled():
+        print("Mini-app forms disabled; listener skipped")
         return
 
+    print("Mini-app forms enabled, checking configuration")
     stream_url = os.environ.get("MINI_APP_FORMS_STREAM_URL", "").strip()
     webhook_secret = os.environ.get("MINI_APP_FORMS_WEBHOOK_SECRET", "").strip()
     if not stream_url or not webhook_secret:
@@ -449,6 +452,7 @@ def start_mini_app_forms_listener(updater):
 
     def on_pinfl_generated(generation_data):
         tg_user_id = generation_data.get("tg_user_id")
+        print(f"Custom PINFL request received: {generation_data}")
         if not tg_user_id:
             print(
                 "Mini-app form response received without tg_user_id; "
@@ -460,6 +464,10 @@ def start_mini_app_forms_listener(updater):
             user_lang = generation_data.get("language_code", "ru")
             gender = generation_data.get("gender", "male")
             gender_text = get_text(f"gender_{gender}", user_lang)
+            birth_date = generation_data.get("birth_date")
+            area_code = generation_data.get("area_code")
+            serial_number = generation_data.get("serial_number")
+            print(f"Generator attributes: birth_date={birth_date}, gender={gender}, area_code={area_code}, serial_number={serial_number}")
             message = get_text(
                 "custom_pinfl_generated",
                 user_lang,
@@ -474,6 +482,7 @@ def start_mini_app_forms_listener(updater):
                 text=message,
                 parse_mode="HTML",
             )
+            print(f"PINFL delivered to user {tg_user_id}: {generation_data['pinfl']}")
         except Exception as error:  # pylint: disable=broad-except
             print(f"Mini-app PINFL delivery failed: {error}")
 
@@ -491,6 +500,7 @@ def start_mini_app_forms_listener(updater):
             os.environ.get("MINI_APP_FORMS_POLL_INTERVAL_SECONDS", "3")
         ),
     )
+    print(f"Mini-app forms listener configured: transport={listener.transport}, poll_interval={listener.poll_interval_seconds}s, stream_url={stream_url}")
 
     listener_thread = threading.Thread(target=listener.run_forever, daemon=True)
     listener_thread.start()
