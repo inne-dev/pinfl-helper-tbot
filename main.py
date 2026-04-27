@@ -2,6 +2,7 @@
 
 import datetime
 import json
+import logging
 import os
 import random
 import threading
@@ -30,6 +31,8 @@ from mini_app_forms import (
 
 # Initialize database
 db = Database()
+
+logger = logging.getLogger(__name__)
 
 def _build_request_kwargs():
     """Build Telegram request kwargs, forcing bot API traffic through proxy when set."""
@@ -414,22 +417,22 @@ def error_handler(update, context):
     """Handle errors."""
     import traceback
 
-    print(f"Update {update} caused error {context.error}")
-    print(f"Traceback: {traceback.format_exc()}")
+    logger.info(f"Update {update} caused error {context.error}")
+    logger.info(f"Traceback: {traceback.format_exc()}")
 
 
 def start_mini_app_forms_listener(updater):
     """Start optional mini-app forms SSE listener in a background thread."""
-    print("Starting mini-app forms listener")
+    logger.info("Starting mini-app forms listener")
     if not mini_app_forms_enabled():
-        print("Mini-app forms disabled; listener skipped")
+        logger.info("Mini-app forms disabled; listener skipped")
         return
 
-    print("Mini-app forms enabled, checking configuration")
+    logger.info("Mini-app forms enabled, checking configuration")
     stream_url = os.environ.get("MINI_APP_FORMS_STREAM_URL", "").strip()
     webhook_secret = os.environ.get("MINI_APP_FORMS_WEBHOOK_SECRET", "").strip()
     if not stream_url or not webhook_secret:
-        print(
+        logger.info(
             "Mini-app forms listener skipped: MINI_APP_FORMS_STREAM_URL or "
             "MINI_APP_FORMS_WEBHOOK_SECRET is not set"
         )
@@ -452,9 +455,9 @@ def start_mini_app_forms_listener(updater):
 
     def on_pinfl_generated(generation_data):
         tg_user_id = generation_data.get("tg_user_id")
-        print(f"Custom PINFL request received: {generation_data}")
+        logger.info(f"Custom PINFL request received: {generation_data}")
         if not tg_user_id:
-            print(
+            logger.info(
                 "Mini-app form response received without tg_user_id; "
                 "PINFL generated but not sent"
             )
@@ -467,7 +470,7 @@ def start_mini_app_forms_listener(updater):
             birth_date = generation_data.get("birth_date")
             area_code = generation_data.get("area_code")
             serial_number = generation_data.get("serial_number")
-            print(f"Generator attributes: birth_date={birth_date}, gender={gender}, area_code={area_code}, serial_number={serial_number}")
+            logger.info(f"Generator attributes: birth_date={birth_date}, gender={gender}, area_code={area_code}, serial_number={serial_number}")
             message = get_text(
                 "custom_pinfl_generated",
                 user_lang,
@@ -482,9 +485,9 @@ def start_mini_app_forms_listener(updater):
                 text=message,
                 parse_mode="HTML",
             )
-            print(f"PINFL delivered to user {tg_user_id}: {generation_data['pinfl']}")
+            logger.info(f"PINFL delivered to user {tg_user_id}: {generation_data['pinfl']}")
         except Exception as error:  # pylint: disable=broad-except
-            print(f"Mini-app PINFL delivery failed: {error}")
+            logger.info(f"Mini-app PINFL delivery failed: {error}")
 
     listener = MiniAppFormsListener(
         stream_url=stream_url,
@@ -500,18 +503,22 @@ def start_mini_app_forms_listener(updater):
             os.environ.get("MINI_APP_FORMS_POLL_INTERVAL_SECONDS", "3")
         ),
     )
-    print(f"Mini-app forms listener configured: transport={listener.transport}, poll_interval={listener.poll_interval_seconds}s, stream_url={stream_url}")
+    logger.info(f"Mini-app forms listener configured: transport={listener.transport}, poll_interval={listener.poll_interval_seconds}s, stream_url={stream_url}")
 
     listener_thread = threading.Thread(target=listener.run_forever, daemon=True)
     listener_thread.start()
-    print("Mini-app forms listener started")
+    logger.info("Mini-app forms listener started")
 
 
 def main():
     """Entry point."""
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+    )
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     if not token:
-        print("Error: TELEGRAM_BOT_TOKEN environment variable is not set")
+        logger.info("Error: TELEGRAM_BOT_TOKEN environment variable is not set")
         return
 
     updater = Updater(token, request_kwargs=_build_request_kwargs(), use_context=True)
@@ -543,11 +550,11 @@ def main():
             if not listener_started:
                 start_mini_app_forms_listener(updater)
                 listener_started = True
-            print("Bot launched successfully")
+            logger.info("Bot launched successfully")
             updater.idle()
             return
         except NetworkError as exc:
-            print(f"Telegram via VPN unreachable, retry in 5s: {exc}")
+            logger.info(f"Telegram via VPN unreachable, retry in 5s: {exc}")
             try:
                 updater.stop()
             except Exception:
