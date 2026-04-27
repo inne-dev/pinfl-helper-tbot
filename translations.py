@@ -118,7 +118,7 @@ TRANSLATIONS = {
             "Jins: #{gender}\n"
             "Hudud kodi: {area_code}\n"
             "Seriya raqami: {serial_number}\n\n"
-            "Forma wappy.space xizmati yordamida yaratildi."
+            'Forma <a href="{wappy.space}">Wappy</a> xizmati yordamida yaratildi.'
         ),
         "ru": (
             "<b>Кастомный PINFL по заявке:</b>\n"
@@ -127,7 +127,7 @@ TRANSLATIONS = {
             "Пол: #{gender}\n"
             "Код региона: {area_code}\n"
             "Серийный номер: {serial_number}\n\n"
-            "Форма создана с помощью сервиса wappy.space"
+            'Форма создана с помощью сервиса <a href="{wappy.space}">Wappy</a>'
         ),
         "en": (
             "<b>Custom PINFL:</b>\n"
@@ -136,7 +136,7 @@ TRANSLATIONS = {
             "Gender: #{gender}\n"
             "Area code: {area_code}\n"
             "Serial number: {serial_number}\n\n"
-            "The form was created using the wappy.space service"
+            'The form was created using the <a href="{wappy.space}">Wappy</a> service'
         ),
     },
     "generate_custom_open_mini_app": {
