@@ -15,7 +15,7 @@ class PinflUtilitiesGenerator:
         century = str(self._gender_date_index(gender, birth_date))
         month = str(birth_date.month).zfill(2)
         day = str(birth_date.day).zfill(2)
-        decade = str(birth_date.year % 100)
+        decade = str(birth_date.year % 100).zfill(2)
 
         if area_code is None:
             area_code = random.randint(1, 999)
