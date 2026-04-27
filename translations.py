@@ -106,37 +106,37 @@ TRANSLATIONS = {
         ),
     },
     "generated_pinfl": {
-        "uz": "Tug'ilgan sana: {birth_date}\nJins: #{gender}",
-        "ru": "Дата рождения: {birth_date}\nПол: #{gender}",
-        "en": "Date of birth: {birth_date}\nGender: #{gender}",
+        "uz": "Tug'ilgan sana: {birth_date}\nJins: {gender}",
+        "ru": "Дата рождения: {birth_date}\nПол: {gender}",
+        "en": "Date of birth: {birth_date}\nGender: {gender}",
     },
     "custom_pinfl_generated": {
         "uz": (
             "<b>Kastomnyy PINFL:</b>\n"
             "<pre>{pinfl}</pre>\n"
             "Tug'ilgan sana: {birth_date}\n"
-            "Jins: #{gender}\n"
+            "Jins: {gender}\n"
             "Hudud kodi: {area_code}\n"
             "Seriya raqami: {serial_number}\n\n"
-            'Forma <a href="{wappy.space}">Wappy</a> xizmati yordamida yaratildi.'
+            'Forma <a href="{wappy_url}">Wappy</a> xizmati yordamida yaratildi.'
         ),
         "ru": (
             "<b>Кастомный PINFL по заявке:</b>\n"
             "<pre>{pinfl}</pre>\n"
             "Дата рождения: {birth_date}\n"
-            "Пол: #{gender}\n"
+            "Пол: {gender}\n"
             "Код региона: {area_code}\n"
             "Серийный номер: {serial_number}\n\n"
-            'Форма создана с помощью сервиса <a href="{wappy.space}">Wappy</a>'
+            'Форма создана с помощью сервиса <a href="{wappy_url}">Wappy</a>'
         ),
         "en": (
             "<b>Custom PINFL:</b>\n"
             "<pre>{pinfl}</pre>\n"
             "Date of birth: {birth_date}\n"
-            "Gender: #{gender}\n"
+            "Gender: {gender}\n"
             "Area code: {area_code}\n"
             "Serial number: {serial_number}\n\n"
-            'The form was created using the <a href="{wappy.space}">Wappy</a> service'
+            'The form was created using the <a href="{wappy_url}">Wappy</a> service'
         ),
     },
     "generate_custom_open_mini_app": {
