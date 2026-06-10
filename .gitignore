@@ -3,11 +3,9 @@ autom4te.cache
 .env
 .DS_Store
 
-# Database files
-data/*.db
-data/*.db-journal
-data/*.db-wal
-data/*.db-shm
+# Runtime data files
+data/*
+!data/.gitkeep
 
 # Python cache
 __pycache__/
@@ -46,8 +44,3 @@ ENV/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
-data/v2ray.log
-data/v2ray.pid
-data/v2ray_config.json
-data/vpn_state.json
-data/v2ray_probe_config.json

@@ -6,10 +6,8 @@ import logging
 import os
 import random
 import threading
-import time
 from functools import wraps
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
-from telegram.error import NetworkError
 from telegram.ext import (
     Updater,
     CommandHandler,
@@ -33,22 +31,6 @@ from mini_app_forms import (
 db = Database()
 
 logger = logging.getLogger(__name__)
-
-def _build_request_kwargs():
-    """Build Telegram request kwargs, forcing bot API traffic through proxy when set."""
-    proxy_url = (
-        os.environ.get("ALL_PROXY")
-        or os.environ.get("HTTPS_PROXY")
-        or os.environ.get("HTTP_PROXY")
-        or os.environ.get("all_proxy")
-        or os.environ.get("https_proxy")
-        or os.environ.get("http_proxy")
-    )
-
-    if not proxy_url:
-        return {}
-
-    return {"proxy_url": proxy_url}
 
 
 # Statistics are available to all users for transparency and interest
@@ -523,7 +505,7 @@ def main():
         logger.info("Error: TELEGRAM_BOT_TOKEN environment variable is not set")
         return
 
-    updater = Updater(token, request_kwargs=_build_request_kwargs(), use_context=True)
+    updater = Updater(token, use_context=True)
     dp = updater.dispatcher
 
     # Command handlers
@@ -544,24 +526,10 @@ def main():
     # Error handler
     dp.add_error_handler(error_handler)
 
-    listener_started = False
-
-    while True:
-        try:
-            updater.start_polling()
-            if not listener_started:
-                start_mini_app_forms_listener(updater)
-                listener_started = True
-            logger.info("Bot launched successfully")
-            updater.idle()
-            return
-        except NetworkError as exc:
-            logger.info(f"Telegram via VPN unreachable, retry in 5s: {exc}")
-            try:
-                updater.stop()
-            except Exception:
-                pass
-            time.sleep(5)
+    updater.start_polling()
+    start_mini_app_forms_listener(updater)
+    logger.info("Bot launched successfully")
+    updater.idle()
 
 
 if __name__ == "__main__":
